@@ -1,7 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:final_project/controllers/movie_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final controller = Get.find<MovieController>();
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +110,32 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+
+            SliverToBoxAdapter(
+              child: Obx(() {
+                if (controller.nowPlayingList.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return CarouselSlider(
+                  items:
+                      controller.nowPlayingList.map((movie) {
+                        return Container(
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                "https://image.tmdb.org/t/p/w500${movie.backDropImage}",
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                  options: CarouselOptions(autoPlay: true),
+                );
+              }),
             ),
           ],
         ),
