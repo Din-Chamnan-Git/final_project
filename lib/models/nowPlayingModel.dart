@@ -13,10 +13,10 @@ class Nowplayingmodel {
 
   factory Nowplayingmodel.fromjson(Map<String, dynamic> json) {
     return Nowplayingmodel(
-      id: json['id'],
-      title: json['title'],
-      backDropImage: json['backdrop_path'],
-      releaseDate: json['release_date'],
+      id: json['id'] ?? 0,
+      title: json['title'] ?? 'No Title',
+      backDropImage: json['backdrop_path'] ?? '',
+      releaseDate: json['release_date'] ?? 'Unknown',
     );
   }
 }

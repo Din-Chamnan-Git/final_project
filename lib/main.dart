@@ -7,8 +7,9 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(MovieController());
+
   await dotenv.load(fileName: ".env");
+  Get.put(MovieController());
   runApp(const MyApp());
 }
 

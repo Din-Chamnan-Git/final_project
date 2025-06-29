@@ -4,16 +4,26 @@ import 'package:get/get.dart';
 
 class MovieController extends GetxController {
   final nowPlayingList = <Nowplayingmodel>[].obs;
+  var isLoading = true.obs;
 
-  ApiService apiService = ApiService();
+  final apiService = ApiService();
 
   @override
   void onInit() {
     super.onInit();
-    fetchNowPlayingg();
+    fetchNowPlayingMovies();
   }
 
-  Future<void> fetchNowPlayingg() async {
-    nowPlayingList.value = await apiService.fetchNowPlaying();
+  void fetchNowPlayingMovies() async {
+    try {
+      isLoading.value = true;
+      final movies = await apiService.fetchNowPlaying();
+      nowPlayingList.assignAll(movies);
+      print("Fetched ${movies.length} movies.");
+    } catch (e) {
+      print("Controller error: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

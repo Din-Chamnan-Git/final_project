@@ -10,17 +10,24 @@ class ApiService {
   Future<List<Nowplayingmodel>> fetchNowPlaying() async {
     final url = Uri.parse('$baseUrl/movie/now_playing?api_key=$apikey');
 
-    final response = await http.get(url);
+    try {
+      final response = await http.get(url);
+      print("Status Code: ${response.statusCode}");
+      print("Body: ${response.body}");
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)['results'];
-      return (data as List)
-          .map((json) => Nowplayingmodel.fromjson(json))
-          .toList();
-    } else {
-      throw Exception(
-        "Failed to fetch now playing movies. Status code: ${response.statusCode}",
-      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['results'];
+        return (data as List)
+            .map((json) => Nowplayingmodel.fromjson(json))
+            .toList();
+      } else {
+        throw Exception(
+          "Failed to fetch now playing movies. Status code: ${response.statusCode}",
+        );
+      }
+    } catch (e) {
+      print("API Error: $e");
+      return [];
     }
   }
 }

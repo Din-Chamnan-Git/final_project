@@ -1,12 +1,20 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:final_project/const/themes/app_theme.dart';
 import 'package:final_project/controllers/movie_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
-  final controller = Get.find<MovieController>();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final controller = Get.put(MovieController());
+  // If not already injected
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -113,29 +121,108 @@ class HomeScreen extends StatelessWidget {
             ),
 
             SliverToBoxAdapter(
-              child: Obx(() {
-                if (controller.nowPlayingList.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return CarouselSlider(
-                  items:
-                      controller.nowPlayingList.map((movie) {
-                        return Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                "https://image.tmdb.org/t/p/w500${movie.backDropImage}",
-                              ),
-                              fit: BoxFit.cover,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Obx(() {
+                      if (controller.isLoading.value) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (controller.nowPlayingList.isEmpty) {
+                        return const Center(child: Text("No movies found"));
+                      }
+                      return Column(
+                        children: [
+                          CarouselSlider(
+                            items:
+                                controller.nowPlayingList.map((movie) {
+                                  return Stack(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              "https://image.tmdb.org/t/p/w500${movie.backDropImage}",
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 20,
+                                            bottom: 20,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                movie.title,
+                                                style: AppThemeData.montserrat(
+                                                  20,
+                                                  FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                movie.releaseDate,
+                                                style: AppThemeData.montserrat(
+                                                  16,
+                                                  FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                            options: CarouselOptions(
+                              autoPlay: true,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _currentIndex = index % 3;
+                                });
+                              },
                             ),
                           ),
-                        );
-                      }).toList(),
-                  options: CarouselOptions(autoPlay: true),
-                );
-              }),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (index) {
+                              bool isActive = _currentIndex == index;
+
+                              return AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                width: isActive ? 16 : 8,
+                                height: 8,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isActive
+                                          ? AppThemeData.primaryBlueAccent
+                                          : AppThemeData.primarySoft,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              );
+                            }),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
