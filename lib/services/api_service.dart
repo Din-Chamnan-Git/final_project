@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:final_project/models/categoryModel.dart';
 import 'package:final_project/models/nowPlayingModel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,26 @@ class ApiService {
     } catch (e) {
       print("API Error: $e");
       return [];
+    }
+  }
+
+  Future<List<Categorymodel>> fetchCategory() async {
+    final url = Uri.parse('$baseUrl/genre/movie/list?api_key=$apikey');
+
+    try {
+      final respone = await http.get(url);
+
+      if (respone.statusCode == 200) {
+        var data = jsonDecode(respone.body)['genres'];
+
+        return (data as List)
+            .map((json) => Categorymodel.fromJson(json))
+            .toList();
+      } else {
+        throw Exception("Errro");
+      }
+    } catch (e) {
+      throw Exception("Error loading categories: $e");
     }
   }
 }

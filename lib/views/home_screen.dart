@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:final_project/const/themes/app_theme.dart';
 import 'package:final_project/controllers/movie_controller.dart';
+import 'package:final_project/widgets/CustomCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final controller = Get.put(MovieController());
+  final controller = Get.find<MovieController>();
   // If not already injected
   int _currentIndex = 0;
 
@@ -189,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               autoPlay: true,
                               onPageChanged: (index, reason) {
                                 setState(() {
-                                  _currentIndex = index % 3;
+                                  _currentIndex = index % 4;
                                 });
                               },
                             ),
@@ -197,12 +198,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(3, (index) {
+                            children: List.generate(4, (index) {
                               bool isActive = _currentIndex == index;
 
                               return AnimatedContainer(
                                 duration: Duration(milliseconds: 300),
-                                width: isActive ? 16 : 8,
+                                width: isActive ? 20 : 8,
                                 height: 8,
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 4,
@@ -217,6 +218,42 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 10, 0, 10),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "Category",
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Obx(() {
+                            final list = controller.categoryList;
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  CustomCategory(
+                                    name: "All",
+                                    isSelect: controller.isSelectID.value == 0,
+                                    action: () => controller.selectCategory(0),
+                                  ),
+                                  ...list.map(
+                                    (e) => CustomCategory(
+                                      name: e.name,
+                                      isSelect:
+                                          controller.isSelectID.value == e.id,
+                                      action:
+                                          () => controller.selectCategory(e.id),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         ],
                       );
                     }),
