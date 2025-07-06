@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:final_project/models/categoryModel.dart';
+import 'package:final_project/models/movieModel.dart';
 import 'package:final_project/models/nowPlayingModel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -49,6 +50,30 @@ class ApiService {
       }
     } catch (e) {
       throw Exception("Error loading categories: $e");
+    }
+  }
+
+  Future<List<Moviemodel>> fetchMovieByName(String genreName) async {
+    final allGenres = await fetchCategory();
+
+    // 2. Find the genre that matches the name (case-insensitive)
+    final genre = allGenres.firstWhere(
+      (g) => g.name.toLowerCase() == genreName.toLowerCase(),
+      orElse: () => throw Exception('Genre not found'),
+    );
+
+    final url = Uri.parse(
+      "$baseUrl/discover/movie?api_key=$apikey&with_genres=${genre.id}",
+    );
+
+    var respone = await http.get(url);
+
+    if (respone.statusCode == 200) {
+      var data = jsonDecode(respone.body)['results'];
+
+      return (data as List).map((e) => Moviemodel.fromJson(e)).toList();
+    } else {
+      throw Exception("Error Load Data ");
     }
   }
 }

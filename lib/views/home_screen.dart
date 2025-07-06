@@ -230,30 +230,82 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          Obx(() {
-                            final list = controller.categoryList;
-                            return SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  CustomCategory(
-                                    name: "All",
-                                    isSelect: controller.isSelectID.value == 0,
-                                    action: () => controller.selectCategory(0),
-                                  ),
-                                  ...list.map(
-                                    (e) => CustomCategory(
-                                      name: e.name,
-                                      isSelect:
-                                          controller.isSelectID.value == e.id,
-                                      action:
-                                          () => controller.selectCategory(e.id),
+                          SizedBox(height: 15),
+                          SizedBox(
+                            child: Column(
+                              children: [
+                                Obx(() {
+                                  final list = controller.categoryList;
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        CustomCategory(
+                                          name: "All",
+                                          isSelect:
+                                              controller.isSelectID.value == 0,
+                                          action:
+                                              () =>
+                                                  controller.selectCategory(0),
+                                        ),
+                                        ...list.map(
+                                          (e) => CustomCategory(
+                                            name: e.name,
+                                            isSelect:
+                                                controller.isSelectID.value ==
+                                                e.id,
+                                            action:
+                                                () => controller.selectCategory(
+                                                  e.id,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                                  );
+                                }),
+                                Obx(() {
+                                  final movies = controller.movieByCategory;
+
+                                  if (movies.isEmpty) {
+                                    return const Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Text(
+                                        "No movies in this category.",
+                                      ),
+                                    );
+                                  }
+
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(), // So it doesn't conflict with scroll view
+                                    itemCount: movies.length,
+                                    itemBuilder: (context, index) {
+                                      final movie = movies[index];
+                                      return Card(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 10,
+                                        ),
+                                        child: ListTile(
+                                          leading: Image.network(
+                                            "https://image.tmdb.org/t/p/w200${movie.posterPath}", // or use backDropImage
+                                            width: 50,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          title: Text(movie.title),
+                                          subtitle: Text(
+                                            "Release: ${movie.releasedate}",
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
                         ],
                       );
                     }),

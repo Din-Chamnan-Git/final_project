@@ -1,4 +1,5 @@
 import 'package:final_project/models/categoryModel.dart';
+import 'package:final_project/models/movieModel.dart';
 import 'package:final_project/models/nowPlayingModel.dart';
 import 'package:final_project/services/api_service.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 class MovieController extends GetxController {
   final nowPlayingList = <Nowplayingmodel>[].obs;
   final categoryList = <Categorymodel>[].obs;
+  final movieByCategory = <Moviemodel>[].obs;
 
   var isLoading = true.obs;
 
@@ -48,8 +50,15 @@ class MovieController extends GetxController {
 
   void selectCategory(int id) {
     isSelectID.value = id;
-    // If you want to refetch movies based on selected category:
-    // fetchMoviesByCategory(id);
+
+    if (id == 0) {
+      fetchNowPlayingMovies();
+    } else {
+      final selected = categoryList.firstWhereOrNull((cat) => cat.id == id);
+      if (selected != null) {
+        fetchMovieByNameCategory(selected.name);
+      }
+    }
   }
 
   List<String> getGenreNames(List<int> genreIds) {
@@ -57,5 +66,13 @@ class MovieController extends GetxController {
       final match = categoryList.firstWhereOrNull((c) => c.id == id);
       return match?.name ?? "Unknown";
     }).toList();
+  }
+
+  Future<void> fetchMovieByNameCategory(String genName) async {
+    try {
+      movieByCategory.value = await apiService.fetchMovieByName(genName);
+    } catch (e) {
+      throw Exception("Errro ");
+    }
   }
 }
