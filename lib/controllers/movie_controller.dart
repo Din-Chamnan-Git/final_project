@@ -1,4 +1,5 @@
 import 'package:final_project/models/categoryModel.dart';
+import 'package:final_project/models/movieDetail.dart';
 import 'package:final_project/models/movieModel.dart';
 import 'package:final_project/models/nowPlayingModel.dart';
 import 'package:final_project/services/api_service.dart';
@@ -8,6 +9,7 @@ class MovieController extends GetxController {
   final nowPlayingList = <Nowplayingmodel>[].obs;
   final categoryList = <Categorymodel>[].obs;
   final movieByCategory = <Moviemodel>[].obs;
+  var movieDetail = Rxn<Moviedetail>();
 
   var isLoading = true.obs;
 
@@ -73,6 +75,25 @@ class MovieController extends GetxController {
       movieByCategory.value = await apiService.fetchMovieByName(genName);
     } catch (e) {
       throw Exception("Errro ");
+    }
+  }
+
+  Future<void> getDetail(int movieId) async {
+    try {
+      isLoading.value = true;
+      print("Requesting detail for ID: $movieId"); // 👈 Add this
+      final result = await apiService.fetchMovieDetail(movieId);
+
+      if (result != null) {
+        print("Result: ${result?.title}"); // 👈 Log what comes back
+        movieDetail.value = result;
+      } else {
+        Get.snackbar("Error", "Movie detail not found.");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Failed to load movie detail: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:final_project/const/themes/app_theme.dart';
 import 'package:final_project/controllers/movie_controller.dart';
+import 'package:final_project/views/detail_movie.dart';
 import 'package:final_project/widgets/CustomCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -138,52 +139,64 @@ class _HomeScreenState extends State<HomeScreen> {
                           CarouselSlider(
                             items:
                                 controller.nowPlayingList.map((movie) {
-                                  return Stack(
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                              "https://image.tmdb.org/t/p/w500${movie.backDropImage}",
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (movie.id != null) {
+                                        Get.to(
+                                          () => DetailMovie(moviID: movie.id),
+                                        );
+                                      }
+                                    },
+
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
                                             ),
-                                            fit: BoxFit.cover,
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                "https://image.tmdb.org/t/p/w500${movie.backDropImage}",
+                                              ),
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 20,
-                                            bottom: 20,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                movie.title,
-                                                style: AppThemeData.montserrat(
-                                                  20,
-                                                  FontWeight.bold,
+                                        Positioned(
+                                          bottom: 0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 20,
+                                              bottom: 20,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  movie.title,
+                                                  style:
+                                                      AppThemeData.montserrat(
+                                                        20,
+                                                        FontWeight.bold,
+                                                      ),
                                                 ),
-                                              ),
-                                              Text(
-                                                movie.releaseDate,
-                                                style: AppThemeData.montserrat(
-                                                  16,
-                                                  FontWeight.w500,
+                                                Text(
+                                                  movie.releaseDate,
+                                                  style:
+                                                      AppThemeData.montserrat(
+                                                        16,
+                                                        FontWeight.w500,
+                                                      ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   );
                                 }).toList(),
                             options: CarouselOptions(

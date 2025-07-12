@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:final_project/models/categoryModel.dart';
+import 'package:final_project/models/movieDetail.dart';
 import 'package:final_project/models/movieModel.dart';
 import 'package:final_project/models/nowPlayingModel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -74,6 +75,26 @@ class ApiService {
       return (data as List).map((e) => Moviemodel.fromJson(e)).toList();
     } else {
       throw Exception("Error Load Data ");
+    }
+  }
+
+  Future<Moviedetail?> fetchMovieDetail(int movieID) async {
+    print("Fetching detail for movieID: $movieID"); // 👈 Add this line
+    final url = Uri.parse("$baseUrl/movie/$movieID?api_key=$apikey");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return Moviedetail.fromJson(data);
+      } else {
+        print("Error loading movie detail: ${response.statusCode}");
+        throw Exception("Failed to load movie detail");
+      }
+    } catch (e) {
+      print("Exception in fetchMovieDetail: $e");
+      return null; // return null if something goes wrong
     }
   }
 }
