@@ -11,7 +11,7 @@ class Nowplayingmodel {
     required this.releaseDate,
   });
 
-  factory Nowplayingmodel.fromjson(Map<String, dynamic> json) {
+  factory Nowplayingmodel.fromJson(Map<String, dynamic> json) {
     return Nowplayingmodel(
       id: json['id'] ?? 0,
       title: json['title'] ?? 'No Title',

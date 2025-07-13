@@ -21,7 +21,7 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['results'];
         return (data as List)
-            .map((json) => Nowplayingmodel.fromjson(json))
+            .map((json) => Nowplayingmodel.fromJson(json))
             .toList();
       } else {
         throw Exception(
@@ -54,7 +54,7 @@ class ApiService {
     }
   }
 
-  Future<List<Moviemodel>> fetchMovieByName(String genreName) async {
+  Future<List<MovieModel>> fetchMovieByName(String genreName) async {
     final allGenres = await fetchCategory();
 
     // 2. Find the genre that matches the name (case-insensitive)
@@ -72,7 +72,7 @@ class ApiService {
     if (respone.statusCode == 200) {
       var data = jsonDecode(respone.body)['results'];
 
-      return (data as List).map((e) => Moviemodel.fromJson(e)).toList();
+      return (data as List).map((e) => MovieModel.fromJson(e)).toList();
     } else {
       throw Exception("Error Load Data ");
     }

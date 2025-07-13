@@ -5,6 +5,7 @@ import 'package:final_project/views/detail_movie.dart';
 import 'package:final_project/widgets/CustomCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -139,15 +140,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           CarouselSlider(
                             items:
                                 controller.nowPlayingList.map((movie) {
+                                  if (movie == null) {
+                                    // Return some empty widget or placeholder if movie is null
+                                    return const SizedBox.shrink();
+                                  }
+
                                   return GestureDetector(
                                     onTap: () {
-                                      if (movie.id != null) {
-                                        Get.to(
-                                          () => DetailMovie(moviID: movie.id),
-                                        );
-                                      }
+                                      Get.to(
+                                        () => DetailMovie(moviID: movie.id),
+                                      );
                                     },
-
                                     child: Stack(
                                       children: [
                                         Container(
@@ -184,7 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                 ),
                                                 Text(
-                                                  movie.releaseDate,
+                                                  movie.releaseDate ??
+                                                      'Unknown', // ✅ FIX HERE
                                                   style:
                                                       AppThemeData.montserrat(
                                                         16,
@@ -208,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                           ),
+
                           SizedBox(height: 10),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -277,44 +282,231 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   );
                                 }),
+                                SizedBox(height: 10),
                                 Obx(() {
-                                  final movies = controller.movieByCategory;
+                                  if (controller.isSelectID.value == 0) {
+                                    final movies = controller.nowPlayingList;
 
-                                  if (movies.isEmpty) {
-                                    return const Padding(
-                                      padding: EdgeInsets.all(20),
-                                      child: Text(
-                                        "No movies in this category.",
+                                    if (movies.isEmpty) {
+                                      return const Padding(
+                                        padding: EdgeInsets.all(20),
+                                        child: Text(
+                                          "No movies in this category.",
+                                        ),
+                                      );
+                                    }
+
+                                    return SizedBox(
+                                      height: 270,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: Row(
+                                          children:
+                                              movies.map((movie) {
+                                                return Container(
+                                                  width: 160,
+                                                  margin: const EdgeInsets.only(
+                                                    right: 10,
+                                                  ),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              const BorderRadius.vertical(
+                                                                top:
+                                                                    Radius.circular(
+                                                                      10,
+                                                                    ),
+                                                              ),
+                                                          child: Image.network(
+                                                            "https://image.tmdb.org/t/p/w200${movie.backDropImage}",
+                                                            height: 200,
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder:
+                                                                (
+                                                                  context,
+                                                                  error,
+                                                                  stackTrace,
+                                                                ) => const Icon(
+                                                                  Icons
+                                                                      .broken_image,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8,
+                                                              ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                movie.title,
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 14,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 4,
+                                                              ),
+                                                              Text(
+                                                                "Release: ${movie.releaseDate ?? 'Unknown'}",
+                                                                style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color:
+                                                                      Colors
+                                                                          .grey,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    final movies = controller.movieByCategory;
+
+                                    if (movies.isEmpty) {
+                                      return const Padding(
+                                        padding: EdgeInsets.all(20),
+                                        child: Text(
+                                          "No movies in this category.",
+                                        ),
+                                      );
+                                    }
+
+                                    return SizedBox(
+                                      height: 270,
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                        child: Row(
+                                          children:
+                                              movies.map((movie) {
+                                                return Container(
+                                                  width: 160,
+                                                  margin: const EdgeInsets.only(
+                                                    right: 10,
+                                                  ),
+                                                  child: Card(
+                                                    elevation: 3,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              const BorderRadius.vertical(
+                                                                top:
+                                                                    Radius.circular(
+                                                                      10,
+                                                                    ),
+                                                              ),
+                                                          child: Image.network(
+                                                            "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                                                            height: 200,
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder:
+                                                                (
+                                                                  context,
+                                                                  error,
+                                                                  stackTrace,
+                                                                ) => const Icon(
+                                                                  Icons
+                                                                      .broken_image,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8,
+                                                              ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                movie.title,
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 14,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 4,
+                                                              ),
+                                                              Text(
+                                                                "Release: ${movie.releasedate ?? 'Unknown'}",
+                                                                style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  color:
+                                                                      Colors
+                                                                          .grey,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                        ),
                                       ),
                                     );
                                   }
-
-                                  return ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(), // So it doesn't conflict with scroll view
-                                    itemCount: movies.length,
-                                    itemBuilder: (context, index) {
-                                      final movie = movies[index];
-                                      return Card(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 20,
-                                          vertical: 10,
-                                        ),
-                                        child: ListTile(
-                                          leading: Image.network(
-                                            "https://image.tmdb.org/t/p/w200${movie.posterPath}", // or use backDropImage
-                                            width: 50,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          title: Text(movie.title),
-                                          subtitle: Text(
-                                            "Release: ${movie.releasedate}",
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
                                 }),
                               ],
                             ),
@@ -329,6 +521,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+     
     );
   }
 }
