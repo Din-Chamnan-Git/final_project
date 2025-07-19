@@ -97,4 +97,28 @@ class ApiService {
       return null; // return null if something goes wrong
     }
   }
+
+  // seach
+  Future<List<MovieModel>> fetchSearchByname(String query) async {
+    var url = Uri.parse(
+      "$baseUrl/search/movie?api_key=$apikey&query=${Uri.encodeComponent(query)}",
+    );
+
+    try {
+      final response = await http.get(url);
+      print("Search Status Code: ${response.statusCode}");
+      print("Search Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['results'];
+        return (data as List).map((json) => MovieModel.fromJson(json)).toList();
+      } else {
+        throw Exception("Search failed. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error during movie search: $e");
+      return [];
+    }
+  }
+  
 }

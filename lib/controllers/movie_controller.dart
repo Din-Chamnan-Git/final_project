@@ -81,7 +81,7 @@ class MovieController extends GetxController {
     }
   }
 
-  Future<void> getDetail(int movieId) async {
+  Future<void> getDetail(int movieId)async {
     try {
       detailLoading.value = true;
       print("Requesting detail for ID: $movieId");
